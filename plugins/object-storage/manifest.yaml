@@ -7,6 +7,8 @@ metadata:
 spec:
   description: "S3-compatible object storage powered by RustFS, federated to Keycloak SSO and backed by ZFS."
   category: storage
+  displayCategory: storage
+  tags: ["s3", "object", "backup-target", "rustfs"]
   icon: icon.svg
 
   deployment:

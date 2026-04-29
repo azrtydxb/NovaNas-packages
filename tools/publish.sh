@@ -28,6 +28,10 @@ VERSION="$(yq -r '.metadata.version' "$PLUGIN_DIR/manifest.yaml")"
 TAG="${NAME}-${VERSION}"
 DISPLAY="$(yq -r '.spec.displayName // .metadata.name' "$PLUGIN_DIR/manifest.yaml")"
 CATEGORY="$(yq -r '.spec.category // "other"' "$PLUGIN_DIR/manifest.yaml")"
+DISPLAY_CATEGORY="$(yq -r '.spec.displayCategory // ""' "$PLUGIN_DIR/manifest.yaml")"
+# Tags rendered as a JSON array string for --argjson. Empty / missing
+# yields []. yq's -o=json keeps an array as JSON natively.
+TAGS_JSON="$(yq -o=json -I=0 '.spec.tags // []' "$PLUGIN_DIR/manifest.yaml")"
 DESCRIPTION="$(yq -r '.spec.description // ""' "$PLUGIN_DIR/manifest.yaml")"
 VENDOR="$(yq -r '.metadata.vendor // "novanas.io"' "$PLUGIN_DIR/manifest.yaml")"
 
@@ -60,6 +64,8 @@ ICON_URL="https://raw.githubusercontent.com/$(gh repo view --json nameWithOwner 
 jq --arg name "$NAME" \
    --arg displayName "$DISPLAY" \
    --arg category "$CATEGORY" \
+   --arg displayCategory "$DISPLAY_CATEGORY" \
+   --argjson tags "$TAGS_JSON" \
    --arg vendor "$VENDOR" \
    --arg description "$DESCRIPTION" \
    --arg icon "$ICON_URL" \
@@ -82,6 +88,18 @@ jq --arg name "$NAME" \
             vendor: $vendor, icon: $icon, description: $description,
             versions: []
           }] end)
+      )
+    # Refresh the per-plugin metadata fields so re-publish picks up
+    # manifest changes (displayCategory + tags being the immediate
+    # motivation; description/icon/category are equally captured).
+    | (.plugins[] | select(.name == $name)) |= (
+        .displayName = $displayName
+        | .category = $category
+        | .vendor = $vendor
+        | .description = $description
+        | .icon = $icon
+        | (if $displayCategory == "" then del(.displayCategory) else .displayCategory = $displayCategory end)
+        | (if ($tags | length) == 0 then del(.tags) else .tags = $tags end)
       )
     | (.plugins[] | select(.name == $name)).versions |= (
         (map(select(.version != $version))) + [{
