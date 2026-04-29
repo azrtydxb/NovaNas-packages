@@ -1,10 +1,29 @@
 {
   "schema": "novanas.io/v1/plugin-index",
-  "updated": "2026-04-29T17:00:00Z",
+  "updated": "2026-04-29T14:14:53Z",
   "trust": {
     "publicKey": "https://raw.githubusercontent.com/azrtydxb/NovaNas-packages/main/trust/novanas-marketplace.pub",
     "fingerprint": "TBD-after-cosign-genkey",
     "signer": "novanas.io marketplace"
   },
-  "plugins": []
+  "plugins": [
+    {
+      "name": "object-storage",
+      "displayName": "Object Storage",
+      "category": "storage",
+      "vendor": "novanas.io",
+      "icon": "https://raw.githubusercontent.com/azrtydxb/NovaNas-packages/main/plugins/object-storage/icon.svg",
+      "description": "S3-compatible object storage powered by RustFS, federated to Keycloak SSO and backed by ZFS.",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "url": "https://github.com/azrtydxb/NovaNas-packages/releases/download/object-storage-1.0.0/object-storage-1.0.0.tar.gz",
+          "signature": "https://github.com/azrtydxb/NovaNas-packages/releases/download/object-storage-1.0.0/object-storage-1.0.0.tar.gz.sig",
+          "sha256": "f6a84d82a6a390d512aa5a657966f446f90a8d41349e4f84b557bb0628fc218e",
+          "size": 19864,
+          "released": "2026-04-29"
+        }
+      ]
+    }
+  ]
 }
