@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-04-29T14:27:18Z",
+  "updated": "2026-04-29T14:54:45Z",
   "trust": {
     "publicKey": "https://raw.githubusercontent.com/azrtydxb/NovaNas-packages/main/trust/novanas-marketplace.pub",
     "signer": "novanas.io marketplace"
@@ -18,9 +18,9 @@
           "version": "1.0.0",
           "tarballUrl": "https://github.com/azrtydxb/NovaNas-packages/releases/download/object-storage-1.0.0/object-storage-1.0.0.tar.gz",
           "signatureUrl": "https://github.com/azrtydxb/NovaNas-packages/releases/download/object-storage-1.0.0/object-storage-1.0.0.tar.gz.sig",
-          "sha256": "75661f930d6addd059d87e67da49e80b8e3073be5708dca937e1133d8a354f68",
-          "size": 19784,
-          "releasedAt": "2026-04-29T14:27:18Z"
+          "sha256": "76a6a0e28044adbfa81b6e059db141c6e8ba46a6beaf05e6599e182b9c79701e",
+          "size": 19502,
+          "releasedAt": "2026-04-29T14:54:45Z"
         }
       ]
     }

@@ -57,7 +57,9 @@ fi
 
 OUTPUT="$OUTPUT_DIR/${NAME}-${VERSION}.tar.gz"
 # Tar from inside $STAGE so the archive has manifest.yaml at root.
-tar -C "$STAGE" -czf "$OUTPUT" .
+# COPYFILE_DISABLE prevents macOS bsdtar from emitting AppleDouble
+# `._*` files that would litter the unpacked plugin tree on Linux.
+COPYFILE_DISABLE=1 tar -C "$STAGE" --exclude='._*' --exclude='.DS_Store' -czf "$OUTPUT" .
 
 echo "built: $OUTPUT"
 echo "size:  $(stat -f%z "$OUTPUT" 2>/dev/null || stat -c%s "$OUTPUT") bytes"

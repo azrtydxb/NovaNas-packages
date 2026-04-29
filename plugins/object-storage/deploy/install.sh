@@ -144,5 +144,22 @@ else
     install -m 0640 -o root -g rustfs "$ENV_TEMPLATE_SRC" "$ENV_FILE"
 fi
 
+# ----- Cert plumbing --------------------------------------------------------
+# The engine's TLSCertProvisioner writes cert.pem + key.pem (mode 0644/0640
+# root-owned) into $PLUGIN_LIB/certs/. RustFS expects the file names
+# rustfs_cert.pem + rustfs_key.pem, and the rustfs user must be able to
+# read both. Symlink to satisfy the naming, chown to grant read.
+if [ -f "$PLUGIN_LIB/certs/cert.pem" ] && [ -f "$PLUGIN_LIB/certs/key.pem" ]; then
+    log "linking engine-issued cert + key into RustFS-expected names"
+    ln -sf cert.pem "$PLUGIN_LIB/certs/rustfs_cert.pem"
+    ln -sf key.pem  "$PLUGIN_LIB/certs/rustfs_key.pem"
+    chown -h rustfs:rustfs "$PLUGIN_LIB/certs/rustfs_cert.pem" "$PLUGIN_LIB/certs/rustfs_key.pem"
+    chown rustfs:rustfs "$PLUGIN_LIB/certs/cert.pem" "$PLUGIN_LIB/certs/key.pem"
+    chmod 0640 "$PLUGIN_LIB/certs/key.pem"
+fi
+
+# Belt-and-braces: log dir owner — rustfs's stdout file logger needs write.
+chown -R rustfs:rustfs "$PLUGIN_LIB/log" 2>/dev/null || true
+
 log "object-storage plugin install ${RUSTFS_VERSION}: binary + env in place."
-log "Engine will now provision needs (dataset, TLS, Keycloak client) and start the unit."
+log "Engine will now start the unit."
