@@ -1,0 +1,10 @@
+{
+  "schema": "novanas.io/v1/plugin-index",
+  "updated": "2026-04-29T17:00:00Z",
+  "trust": {
+    "publicKey": "https://raw.githubusercontent.com/azrtydxb/NovaNas-packages/main/trust/novanas-marketplace.pub",
+    "fingerprint": "TBD-after-cosign-genkey",
+    "signer": "novanas.io marketplace"
+  },
+  "plugins": []
+}

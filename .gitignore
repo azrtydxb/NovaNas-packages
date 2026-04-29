@@ -1,0 +1,16 @@
+# Cosign private key — NEVER commit
+cosign.key
+*.cosign.key
+
+# Build artifacts
+plugins/*/ui/dist/
+plugins/*/ui/build/
+plugins/*/ui/node_modules/
+plugins/*/build/
+*.tar.gz
+*.sig
+
+# Editor cruft
+.DS_Store
+.vscode/
+.idea/
