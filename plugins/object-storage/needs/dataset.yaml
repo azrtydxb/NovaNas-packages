@@ -1,0 +1,21 @@
+# needs/dataset.yaml — declarative ZFS dataset spec.
+# Consumed by the Tier 2 plugin engine; mirrors manifest.yaml needs.dataset.
+apiVersion: novanas.io/v1
+kind: DatasetNeed
+metadata:
+  name: object-storage-data
+spec:
+  name: tank/objects
+  mountpoint: /var/lib/nova-plugins/object-storage/data
+  owner: rustfs
+  group: rustfs
+  mode: "0750"
+  properties:
+    recordsize: 1M
+    atime: off
+    compression: lz4
+    xattr: sa
+    acltype: posixacl
+  # On uninstall, the dataset is preserved by default. `nova plugin
+  # uninstall --purge` is required to destroy it.
+  preserveOnUninstall: true

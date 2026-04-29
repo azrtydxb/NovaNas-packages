@@ -1,0 +1,80 @@
+{
+  "_comment": "Keycloak client representation consumed by the Tier 2 engine. Created/updated in realm `novanas` via the admin API. Mirrors deploy/keycloak/create-rustfs-client.sh from the Tier-1 deployment but in declarative form. The engine rotates clientSecret and writes it into /var/lib/nova-plugins/object-storage/etc/rustfs.env as RUSTFS_IDENTITY_OPENID_CLIENT_SECRET.",
+  "clientId": "rustfs",
+  "name": "NovaNAS RustFS object storage",
+  "description": "OIDC client for RustFS console (auth-code) and service-to-service (client_credentials)",
+  "enabled": true,
+  "protocol": "openid-connect",
+  "publicClient": false,
+  "clientAuthenticatorType": "client-secret",
+  "standardFlowEnabled": true,
+  "directAccessGrantsEnabled": false,
+  "implicitFlowEnabled": false,
+  "serviceAccountsEnabled": true,
+  "frontchannelLogout": true,
+  "rootUrl": "https://novanas.local:9001",
+  "baseUrl": "https://novanas.local:9001",
+  "redirectUris": [
+    "https://novanas.local:9001/rustfs/console/oauth_callback"
+  ],
+  "webOrigins": [
+    "https://novanas.local:9001"
+  ],
+  "attributes": {
+    "post.logout.redirect.uris": "https://novanas.local:9001/*",
+    "pkce.code.challenge.method": "S256"
+  },
+  "defaultClientScopes": [
+    "web-origins",
+    "profile",
+    "roles",
+    "email"
+  ],
+  "optionalClientScopes": [
+    "address",
+    "phone",
+    "offline_access",
+    "microprofile-jwt"
+  ],
+  "protocolMappers": [
+    {
+      "name": "rustfs-audience",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-audience-mapper",
+      "config": {
+        "included.client.audience": "rustfs",
+        "id.token.claim": "true",
+        "access.token.claim": "true"
+      }
+    },
+    {
+      "name": "rustfs-realm-roles-as-groups",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usermodel-realm-role-mapper",
+      "config": {
+        "multivalued": "true",
+        "userinfo.token.claim": "true",
+        "id.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "groups",
+        "jsonType.label": "String"
+      }
+    }
+  ],
+  "clientRoles": [
+    { "name": "nova-admin",    "description": "Mirror of realm role nova-admin for RustFS policy mapping" },
+    { "name": "nova-operator", "description": "Mirror of realm role nova-operator for RustFS policy mapping" },
+    { "name": "nova-viewer",   "description": "Mirror of realm role nova-viewer for RustFS policy mapping" }
+  ],
+  "realmRoleMappings": [
+    { "realmRole": "nova-admin",    "clientRole": "nova-admin" },
+    { "realmRole": "nova-operator", "clientRole": "nova-operator" },
+    { "realmRole": "nova-viewer",   "clientRole": "nova-viewer" }
+  ],
+  "serviceAccountRealmRoles": [
+    "nova-operator"
+  ],
+  "rotateSecretOnApply": true,
+  "secretEnvFile": "/var/lib/nova-plugins/object-storage/etc/rustfs.env",
+  "secretEnvKey": "RUSTFS_IDENTITY_OPENID_CLIENT_SECRET"
+}

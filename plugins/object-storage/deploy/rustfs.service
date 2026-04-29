@@ -1,0 +1,57 @@
+[Unit]
+Description=RustFS S3-compatible object storage (NovaNAS Tier 2 plugin)
+Documentation=https://rustfs.com/docs/ https://docs.rustfs.com/
+# Ensure ZFS pool is online (data lives on tank/objects) before we start.
+After=network-online.target zfs-mount.service
+Wants=network-online.target
+RequiresMountsFor=/var/lib/nova-plugins/object-storage/data
+
+[Service]
+Type=simple
+User=rustfs
+Group=rustfs
+WorkingDirectory=/var/lib/nova-plugins/object-storage
+
+# Environment is sourced from the plugin's per-install env file, written
+# during install. The Tier 2 engine populates the OIDC client secret
+# directly into this file via the oidcClient need.
+EnvironmentFile=/var/lib/nova-plugins/object-storage/etc/rustfs.env
+ExecStart=/var/lib/nova-plugins/object-storage/bin/rustfs ${RUSTFS_VOLUMES}
+
+Restart=on-failure
+RestartSec=10s
+TimeoutStartSec=30s
+TimeoutStopSec=30s
+SendSIGKILL=no
+
+# Resource limits — RustFS opens many file descriptors for object handles.
+LimitNOFILE=1048576
+LimitNPROC=32768
+TasksMax=infinity
+OOMScoreAdjust=-500
+
+# Sandbox: mirror the hardening pattern used by grafana.service / prometheus.service.
+ProtectSystem=strict
+ReadWritePaths=/var/lib/nova-plugins/object-storage/data /var/lib/nova-plugins/object-storage/log
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+NoNewPrivileges=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+
+StandardOutput=append:/var/lib/nova-plugins/object-storage/log/rustfs.log
+StandardError=append:/var/lib/nova-plugins/object-storage/log/rustfs-err.log
+
+[Install]
+WantedBy=multi-user.target

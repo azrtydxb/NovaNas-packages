@@ -1,0 +1,87 @@
+apiVersion: novanas.io/v1
+kind: Plugin
+metadata:
+  name: object-storage
+  version: 1.0.0
+  vendor: novanas.io
+spec:
+  displayName: "Object Storage"
+  description: "S3-compatible object storage powered by RustFS, federated to Keycloak SSO and backed by ZFS."
+  category: storage
+  icon: icon.svg
+
+  deployment:
+    type: systemd
+    systemd:
+      unit: deploy/rustfs.service
+      env: deploy/rustfs.env.template
+      installScript: deploy/install.sh
+
+  needs:
+    - dataset:
+        name: tank/objects
+        properties:
+          recordsize: 1M
+          atime: off
+          compression: lz4
+          xattr: sa
+          acltype: posixacl
+        mountpoint: /var/lib/nova-plugins/object-storage/data
+    - tlsCert:
+        cn: rustfs.novanas.local
+        sans:
+          - rustfs.novanas.local
+          - novanas.local
+          - 127.0.0.1
+        outputDir: /var/lib/nova-plugins/object-storage/certs
+        certName: rustfs_cert.pem
+        keyName: rustfs_key.pem
+        owner: rustfs
+        group: rustfs
+        mode: "0640"
+    - oidcClient:
+        clientId: rustfs
+        type: confidential
+        flows:
+          - authcode
+          - clientcredentials
+        redirectUris:
+          - "https://novanas.local:9001/rustfs/console/oauth_callback"
+        webOrigins:
+          - "https://novanas.local:9001"
+        protocolMappers:
+          - audience-mapper
+          - realm-roles-as-groups
+        spec: needs/keycloak-client.json
+        secretEnvFile: /var/lib/nova-plugins/object-storage/etc/rustfs.env
+        secretEnvKey: RUSTFS_IDENTITY_OPENID_CLIENT_SECRET
+
+  api:
+    routes:
+      # Admin/management surface only — proxied through nova-api so the
+      # Aurora window can call it with the operator's session JWT.
+      # The native S3 API stays on port 9000 and is hit DIRECTLY by
+      # AWS CLI / boto / mc clients.
+      - path: /api/v1/plugins/object-storage/admin/*
+        upstream: https://127.0.0.1:9001/rustfs/admin/
+        auth: bearer-passthrough
+        scopes:
+          - PermPluginsRead
+
+  ui:
+    window:
+      name: "Object Storage"
+      icon: cloud
+      category: storage
+      route: /apps/object-storage
+    bundle:
+      entry: main.js
+
+  health:
+    path: /api/v1/plugins/object-storage/admin/healthz
+
+  lifecycle:
+    preUninstall:
+      confirm: |
+        Uninstalling will stop RustFS. The tank/objects ZFS dataset and
+        all its data will be PRESERVED unless --purge is supplied.

@@ -1,0 +1,23 @@
+{
+  "name": "@novanas/plugin-object-storage-ui",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Aurora UI module for the NovaNAS object-storage Tier 2 plugin (RustFS).",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "lint": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.0"
+  }
+}

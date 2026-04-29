@@ -1,0 +1,22 @@
+# needs/tls.yaml — TLS certificate spec, issued by the local Nova CA.
+apiVersion: novanas.io/v1
+kind: TlsCertNeed
+metadata:
+  name: object-storage-tls
+spec:
+  cn: rustfs.novanas.local
+  sans:
+    - rustfs.novanas.local
+    - novanas.local
+    - 127.0.0.1
+  outputDir: /var/lib/nova-plugins/object-storage/certs
+  certName: rustfs_cert.pem
+  keyName: rustfs_key.pem
+  owner: rustfs
+  group: rustfs
+  mode: "0640"
+  # RustFS reads a directory; we point RUSTFS_TLS_PATH at outputDir.
+  renew:
+    daysBeforeExpiry: 30
+    onRenew: reload-systemd-unit
+    unit: rustfs.service
