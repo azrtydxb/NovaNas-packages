@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-04-29T14:54:45Z",
+  "updated": "2026-04-29T15:41:20Z",
   "trust": {
     "publicKey": "https://raw.githubusercontent.com/azrtydxb/NovaNas-packages/main/trust/novanas-marketplace.pub",
     "signer": "novanas.io marketplace"
@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "object-storage",
-      "displayName": "Object Storage",
+      "displayName": "object-storage",
       "category": "storage",
       "vendor": "novanas.io",
       "icon": "https://raw.githubusercontent.com/azrtydxb/NovaNas-packages/main/plugins/object-storage/icon.svg",
@@ -18,10 +18,17 @@
           "version": "1.0.0",
           "tarballUrl": "https://github.com/azrtydxb/NovaNas-packages/releases/download/object-storage-1.0.0/object-storage-1.0.0.tar.gz",
           "signatureUrl": "https://github.com/azrtydxb/NovaNas-packages/releases/download/object-storage-1.0.0/object-storage-1.0.0.tar.gz.sig",
-          "sha256": "76a6a0e28044adbfa81b6e059db141c6e8ba46a6beaf05e6599e182b9c79701e",
-          "size": 19502,
-          "releasedAt": "2026-04-29T14:54:45Z"
+          "sha256": "0bb51a424208fea4a42bc060f3046a4bbecc1b30736a26a2d0aa10f3fa98e4dd",
+          "size": 19547,
+          "releasedAt": "2026-04-29T15:41:20Z"
         }
+      ],
+      "displayCategory": "storage",
+      "tags": [
+        "s3",
+        "object",
+        "backup-target",
+        "rustfs"
       ]
     }
   ]
