@@ -66,14 +66,17 @@ jq --arg name "$NAME" \
    --arg version "$VERSION" \
    --arg url "$URL" \
    --arg sigUrl "$SIG_URL" \
-   --arg released "$(date -u +%Y-%m-%d)" \
+   --arg released "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
    --arg sha "$SHA" \
    --argjson size "$SIZE" \
    '
-    .updated = (now | todate)
+    # Engine schema: top-level {version:1, updated, plugins[]}.
+    # Per-version: {version, tarballUrl, signatureUrl, sha256, size, releasedAt}.
+    .version = 1
+    | .updated = (now | strftime("%Y-%m-%dT%H:%M:%SZ"))
+    | (if (.trust // null) == null then .trust = {publicKey:"https://raw.githubusercontent.com/azrtydxb/NovaNas-packages/main/trust/novanas-marketplace.pub", signer:"novanas.io marketplace"} else . end)
     | .plugins = (
         (.plugins // [])
-        | map(if .name == $name then . else . end)
         | (if (any(.name == $name)) then . else . + [{
             name: $name, displayName: $displayName, category: $category,
             vendor: $vendor, icon: $icon, description: $description,
@@ -82,8 +85,8 @@ jq --arg name "$NAME" \
       )
     | (.plugins[] | select(.name == $name)).versions |= (
         (map(select(.version != $version))) + [{
-          version: $version, url: $url, signature: $sigUrl,
-          sha256: $sha, size: $size, released: $released
+          version: $version, tarballUrl: $url, signatureUrl: $sigUrl,
+          sha256: $sha, size: $size, releasedAt: $released
         }]
         | sort_by(.version) | reverse
       )

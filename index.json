@@ -1,9 +1,8 @@
 {
-  "schema": "novanas.io/v1/plugin-index",
-  "updated": "2026-04-29T14:14:53Z",
+  "version": 1,
+  "updated": "2026-04-29T14:20:58Z",
   "trust": {
     "publicKey": "https://raw.githubusercontent.com/azrtydxb/NovaNas-packages/main/trust/novanas-marketplace.pub",
-    "fingerprint": "TBD-after-cosign-genkey",
     "signer": "novanas.io marketplace"
   },
   "plugins": [
@@ -17,11 +16,11 @@
       "versions": [
         {
           "version": "1.0.0",
-          "url": "https://github.com/azrtydxb/NovaNas-packages/releases/download/object-storage-1.0.0/object-storage-1.0.0.tar.gz",
-          "signature": "https://github.com/azrtydxb/NovaNas-packages/releases/download/object-storage-1.0.0/object-storage-1.0.0.tar.gz.sig",
-          "sha256": "f6a84d82a6a390d512aa5a657966f446f90a8d41349e4f84b557bb0628fc218e",
-          "size": 19864,
-          "released": "2026-04-29"
+          "tarballUrl": "https://github.com/azrtydxb/NovaNas-packages/releases/download/object-storage-1.0.0/object-storage-1.0.0.tar.gz",
+          "signatureUrl": "https://github.com/azrtydxb/NovaNas-packages/releases/download/object-storage-1.0.0/object-storage-1.0.0.tar.gz.sig",
+          "sha256": "373dd6f92f00016f5f81a9f8c613fa896a58daa55a9558260cf51a9149a34119",
+          "size": 19881,
+          "releasedAt": "2026-04-29T14:20:58Z"
         }
       ]
     }
