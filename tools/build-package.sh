@@ -34,6 +34,8 @@ STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
 # Copy plugin sources, excluding UI build inputs and dotfiles.
+# The nova-api plugin engine expects manifest.yaml at the tarball ROOT
+# (no wrapping directory), so we stage directly into $STAGE.
 rsync -a \
   --exclude=ui/node_modules \
   --exclude=ui/src \
@@ -42,19 +44,20 @@ rsync -a \
   --exclude=ui/vite.config.ts \
   --exclude=ui/tsconfig.json \
   --exclude='.*' \
-  "$PLUGIN_DIR/" "$STAGE/$NAME/"
+  "$PLUGIN_DIR/" "$STAGE/"
 
 # Copy built UI bundle if it exists.
 if [ -d "$PLUGIN_DIR/ui/dist" ]; then
-  rm -rf "$STAGE/$NAME/ui"
-  cp -r "$PLUGIN_DIR/ui/dist" "$STAGE/$NAME/ui"
+  rm -rf "$STAGE/ui"
+  cp -r "$PLUGIN_DIR/ui/dist" "$STAGE/ui"
 elif [ -d "$PLUGIN_DIR/ui/build" ]; then
-  rm -rf "$STAGE/$NAME/ui"
-  cp -r "$PLUGIN_DIR/ui/build" "$STAGE/$NAME/ui"
+  rm -rf "$STAGE/ui"
+  cp -r "$PLUGIN_DIR/ui/build" "$STAGE/ui"
 fi
 
 OUTPUT="$OUTPUT_DIR/${NAME}-${VERSION}.tar.gz"
-tar -C "$STAGE" -czf "$OUTPUT" "$NAME"
+# Tar from inside $STAGE so the archive has manifest.yaml at root.
+tar -C "$STAGE" -czf "$OUTPUT" .
 
 echo "built: $OUTPUT"
 echo "size:  $(stat -f%z "$OUTPUT" 2>/dev/null || stat -c%s "$OUTPUT") bytes"
