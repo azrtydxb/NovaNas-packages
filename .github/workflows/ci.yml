@@ -29,12 +29,15 @@ jobs:
           python3 - <<'PY'
           import glob, json, sys, yaml
           bad = 0
-          for pat, loader in (("**/*.yaml", yaml.safe_load), ("**/*.yml", yaml.safe_load), ("**/*.json", json.load)):
+          for pat, kind in (("**/*.yaml", "yaml"), ("**/*.yml", "yaml"), ("**/*.json", "json")):
               for f in glob.glob(pat, recursive=True):
                   if "/.git/" in f:
                       continue
                   try:
-                      loader(open(f))
+                      if kind == "yaml":
+                          list(yaml.safe_load_all(open(f)))
+                      else:
+                          json.load(open(f))
                   except Exception as e:
                       print(f"{f}: {e}")
                       bad = 1
