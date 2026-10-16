@@ -1,0 +1,42 @@
+name: ci
+
+# Standard azrtydxb PR CI. This repo holds scripts/manifests and had no
+# pull-request checks; this gate validates every YAML/JSON manifest parses.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
+      - name: Validate manifests
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 - <<'PY'
+          import glob, json, sys, yaml
+          bad = 0
+          for pat, loader in (("**/*.yaml", yaml.safe_load), ("**/*.yml", yaml.safe_load), ("**/*.json", json.load)):
+              for f in glob.glob(pat, recursive=True):
+                  if "/.git/" in f:
+                      continue
+                  try:
+                      loader(open(f))
+                  except Exception as e:
+                      print(f"{f}: {e}")
+                      bad = 1
+          sys.exit(bad)
+          PY
