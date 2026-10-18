@@ -6,6 +6,10 @@ on:
   pull_request:
   push:
     branches: [main]
+    tags: ["v*"]
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch: {}
 
 permissions:
   contents: read
